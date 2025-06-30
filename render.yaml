@@ -16,13 +16,16 @@ services:
         value: https://cooperativa-frontend.onrender.com
       - key: SECRET_KEY
         generateValue: true
+      - key: LOG_LEVEL
+        value: INFO
+      - key: MAX_WORKERS
+        value: 4
     healthCheckPath: /docs
-  
+
   # Frontend static site
   - type: web
     name: cooperativa-frontend
     runtime: static
-    region: oregon
     plan: free
     buildCommand: echo "No build step needed for static site"
     staticPublishPath: ./frontend
@@ -31,7 +34,7 @@ services:
         fromService:
           name: cooperativa-backend
           type: web
-          property: url
+          property: host
     routes:
       - type: rewrite
         source: /*
@@ -43,13 +46,15 @@ services:
       - path: /*
         name: X-XSS-Protection
         value: 1; mode=block
+      - path: /*
+        name: Strict-Transport-Security
+        value: "max-age=31536000; includeSubDomains"
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'"
 
 databases:
-  # SQLite database - stored as a disk
   - name: cooperativa-db
-    region: oregon
     plan: free
-    ipAllowList: [] # All IP addresses are allowed to connect
-    # SQLite-specific settings
     databaseName: cooperativa
     user: cooperativa_user
