@@ -53,5 +53,4 @@ services:
 
 databases:
   - name: cooperativa-db
-    databaseName: cooperativa
-    user: cooperativa_user
+    plan: free
