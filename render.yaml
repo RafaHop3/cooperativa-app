@@ -49,8 +49,8 @@ databases:
   - name: cooperativa-db
     region: oregon
     plan: free
-    type: pserv
-    disk:
-      name: sqlite-data
-      mountPath: /var/data
-      sizeGB: 1
+    ipAllowList: [] # All IP addresses are allowed to connect
+    # SQLite-specific settings
+    databaseName: cooperativa
+    user: cooperativa_user
+    sizeGB: 1
