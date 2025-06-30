@@ -53,4 +53,3 @@ databases:
     # SQLite-specific settings
     databaseName: cooperativa
     user: cooperativa_user
-    sizeGB: 1
