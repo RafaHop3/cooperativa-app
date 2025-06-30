@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Cooperativa</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            background-color: #fff;
+        }
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-logo h1 {
+            color: #4e1283;
+            font-weight: bold;
+            text-shadow: -1px -1px 2px #1b8a92, 1px 1px 2px #4e1283;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .btn-login {
+            width: 100%;
+        }
+        .alert {
+            display: none;
+            margin-top: 20px;
+        }
+        .password-requirements {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container">
+        <div class="login-container">
+            <div class="login-logo">
+                <h1>Cooperativa</h1>
+                <p>Sistema de gerenciamento</p>
+            </div>
+            <div class="alert alert-danger" id="loginAlert"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Nome de usuário</label>
+                    <input type="text" class="form-control" id="username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="password" required autocomplete="current-password">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="password-requirements">
+                        A senha deve conter no mínimo 8 caracteres, incluindo letras maiúsculas, 
+                        minúsculas, números e caracteres especiais.
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success btn-login">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- Environment Configuration - load first to set up API URLs -->
+    <script src="env.js"></script>
+    <script>
+        // Set API URL from environment for deployment
+        window.API_URL = window.ENV.API_URL;
+    </script>
+    
+    <script src="auth.js"></script>
+    <script src="activity-logger.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if already authenticated
+            if (isAuthenticated()) {
+                window.location.href = 'index.html';
+            }
+
+            // Handle login form submission
+            const loginForm = document.getElementById('loginForm');
+            const loginAlert = document.getElementById('loginAlert');
+
+            // Toggle password visibility
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle eye icon
+                this.querySelector('i').classList.toggle('fa-eye');
+                this.querySelector('i').classList.toggle('fa-eye-slash');
+            });
+
+            loginForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                loginAlert.style.display = 'none';
+
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    const success = await login(username, password);
+                    if (success) {
+                        // Log successful login on client side
+                        if (window.ActivityLogger) {
+                            window.ActivityLogger.logActivity('login_success_client', {
+                                username: username,
+                                timestamp: new Date().toISOString()
+                            });
+                        }
+                        window.location.href = 'index.html';
+                    } else {
+                        // Log failed login attempt on client side
+                        if (window.ActivityLogger) {
+                            window.ActivityLogger.logActivity('login_failure_client', {
+                                username: username,
+                                timestamp: new Date().toISOString()
+                            });
+                        }
+                        loginAlert.textContent = 'Login falhou. Verifique seu usuário e senha.';
+                        loginAlert.style.display = 'block';
+                    }
+                } catch (error) {
+                    loginAlert.textContent = 'Erro ao conectar ao servidor.';
+                    loginAlert.style.display = 'block';
+                    console.error('Login error:', error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

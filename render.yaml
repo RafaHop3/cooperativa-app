@@ -1,0 +1,56 @@
+services:
+  # Backend API service
+  - type: web
+    name: cooperativa-backend
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT --workers 4
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+      - key: DATABASE_URL
+        value: sqlite:///./cooperativa.db
+      - key: CORS_ORIGINS
+        value: https://cooperativa-frontend.onrender.com
+      - key: SECRET_KEY
+        generateValue: true
+    healthCheckPath: /docs
+  
+  # Frontend static site
+  - type: web
+    name: cooperativa-frontend
+    runtime: static
+    region: oregon
+    plan: free
+    buildCommand: echo "No build step needed for static site"
+    staticPublishPath: ./frontend
+    envVars:
+      - key: API_URL
+        fromService:
+          name: cooperativa-backend
+          type: web
+          property: url
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+
+databases:
+  # SQLite database - stored as a disk
+  - name: cooperativa-db
+    region: oregon
+    plan: free
+    type: pserv
+    disk:
+      name: sqlite-data
+      mountPath: /var/data
+      sizeGB: 1

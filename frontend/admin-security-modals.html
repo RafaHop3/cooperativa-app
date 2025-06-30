@@ -1,0 +1,245 @@
+<!-- Generate New Key Modal -->
+<div class="modal fade" id="generateKeyModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Gerar Nova Chave</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="generateKeyForm">
+                    <div class="form-group">
+                        <label for="keyPassword">Senha para proteger a chave</label>
+                        <input type="password" class="form-control" id="keyPassword" required>
+                        <small class="form-text text-muted">Essa senha será usada para proteger a chave privada.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="keyPasswordConfirm">Confirme a senha</label>
+                        <input type="password" class="form-control" id="keyPasswordConfirm" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="keyDescription">Descrição (opcional)</label>
+                        <input type="text" class="form-control" id="keyDescription">
+                    </div>
+                    <div class="form-group">
+                        <label for="keyValidityDays">Validade (dias)</label>
+                        <input type="number" class="form-control" id="keyValidityDays" value="90" min="1" max="365" required>
+                        <small class="form-text text-muted">Número de dias até a expiração da chave.</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmGenerateKeyBtn">
+                    <span id="generateKeyBtnText">Gerar Chave</span>
+                    <span id="generateKeyBtnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Lock Period Modal -->
+<div class="modal fade" id="createLockModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Criar Período de Bloqueio</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> Atenção: Logs dentro do período de bloqueio não poderão ser alterados ou excluídos.
+                </div>
+                <form id="createLockForm">
+                    <div class="form-group">
+                        <label for="lockDescription">Descrição</label>
+                        <input type="text" class="form-control" id="lockDescription" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lockStartDate">Data Inicial</label>
+                        <input type="date" class="form-control" id="lockStartDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lockEndDate">Data Final</label>
+                        <input type="date" class="form-control" id="lockEndDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lockReason">Motivo do Bloqueio</label>
+                        <textarea class="form-control" id="lockReason" rows="3" required></textarea>
+                        <small class="form-text text-muted">Explique por que esses logs estão sendo bloqueados (ex: auditoria interna, requisito legal)</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmLockBtn">
+                    <span id="createLockBtnText">Criar Bloqueio</span>
+                    <span id="createLockBtnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View/Verify Log Modal -->
+<div class="modal fade" id="viewLogModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalhes do Log</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="logVerifyResult" class="alert d-none mb-3"></div>
+                <div class="card mb-3">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">Informações Básicas</h6>
+                        <span id="logStatusBadge" class="badge"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>ID:</strong> <span id="logId"></span></p>
+                                <p><strong>Usuário:</strong> <span id="logUser"></span></p>
+                                <p><strong>Tipo:</strong> <span id="logTypeDetail"></span></p>
+                                <p><strong>Entidade:</strong> <span id="logEntity"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Data/Hora:</strong> <span id="logTimestamp"></span></p>
+                                <p><strong>IP:</strong> <span id="logIp"></span></p>
+                                <p><strong>Bloqueado:</strong> <span id="logLockStatus"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Dados</h6>
+                    </div>
+                    <div class="card-body">
+                        <pre id="logData" class="key-details"></pre>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Informações de Segurança</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label><strong>Assinatura Digital:</strong></label>
+                            <div class="key-details" id="logSignature"></div>
+                        </div>
+                        <div class="form-group mb-0">
+                            <label><strong>Hash:</strong></label>
+                            <div class="key-details" id="logHash"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-success" id="verifyLogBtn">
+                    <i class="fas fa-check-circle"></i> Verificar Integridade
+                    <span id="verifyLogBtnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View/Rotate Key Modal -->
+<div class="modal fade" id="viewKeyModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalhes da Chave</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card mb-3">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">Informações Básicas</h6>
+                        <span id="keyStatusBadge" class="badge"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>ID:</strong> <span id="keyId"></span></p>
+                                <p><strong>Descrição:</strong> <span id="keyDescriptionDetail"></span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Criado em:</strong> <span id="keyCreatedAt"></span></p>
+                                <p><strong>Expira em:</strong> <span id="keyExpiresAt"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Chave Pública</h6>
+                    </div>
+                    <div class="card-body">
+                        <pre id="publicKeyContent" class="key-details"></pre>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-warning" id="rotateKeyBtn">
+                    <i class="fas fa-sync-alt"></i> Rotacionar Chave
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Verify Export Modal -->
+<div class="modal fade" id="verifyExportModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Verificar Exportação</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="verifyExportForm">
+                    <div class="form-group">
+                        <label for="exportFile">Arquivo de Exportação</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="exportFile" required>
+                            <label class="custom-file-label" for="exportFile">Escolher arquivo...</label>
+                        </div>
+                        <small class="form-text text-muted">Selecione o arquivo de exportação para verificar sua integridade.</small>
+                    </div>
+                </form>
+                <div id="verificationResult" class="mt-4" style="display: none;">
+                    <h6>Resultado da verificação:</h6>
+                    <div id="verificationDetails" class="p-3 border rounded">
+                        <!-- Verification results will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-success" id="verifyExportBtn">
+                    <i class="fas fa-check-circle"></i> Verificar
+                    <span id="verifyExportBtnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

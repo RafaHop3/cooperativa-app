@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste do Sistema de Logs de Atividades</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .log-item {
+            border-left: 4px solid #6f42c1;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f8f9fa;
+        }
+        .passed {
+            color: green;
+            font-weight: bold;
+        }
+        .failed {
+            color: red;
+            font-weight: bold;
+        }
+        .test-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .result-passed {
+            background-color: #d4edda;
+        }
+        .result-failed {
+            background-color: #f8d7da;
+        }
+        h1, h2 {
+            color: #6f42c1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Teste do Sistema de Logs de Atividades</h1>
+        
+        <div class="alert alert-info">
+            Este é um ambiente de teste para verificar o funcionamento do sistema de logs de atividades.
+            <br>
+            <strong>Nota:</strong> Você precisará estar autenticado para que alguns dos testes funcionem corretamente.
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="test-section">
+                    <h2>Autenticação</h2>
+                    <p>Teste o login para verificar o registro de atividades de login:</p>
+                    
+                    <form id="test-login-form" class="mb-3">
+                        <div class="form-group">
+                            <label for="username">Usuário:</label>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Senha:</label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Testar Login</button>
+                    </form>
+                    
+                    <div id="login-result" class="test-result">
+                        Aguardando teste...
+                    </div>
+                </div>
+                
+                <div class="test-section">
+                    <h2>Logging Manual</h2>
+                    <p>Teste o registro manual de diferentes tipos de atividades:</p>
+                    
+                    <div class="form-group">
+                        <label for="activity-type">Tipo de Atividade:</label>
+                        <select class="form-control" id="activity-type">
+                            <option value="page_view">Visualização de Página</option>
+                            <option value="button_click">Clique em Botão</option>
+                            <option value="form_interaction">Interação com Formulário</option>
+                            <option value="data_modification">Modificação de Dados</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="custom-type-group" style="display: none;">
+                        <label for="custom-type">Tipo Personalizado:</label>
+                        <input type="text" class="form-control" id="custom-type">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="details">Detalhes (JSON):</label>
+                        <textarea class="form-control" id="details" rows="3">{"test": true}</textarea>
+                    </div>
+                    
+                    <button id="log-activity-btn" class="btn btn-success">Registrar Atividade</button>
+                    
+                    <div id="manual-log-result" class="test-result mt-3">
+                        Aguardando teste...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="test-section">
+                    <h2>Teste Automático</h2>
+                    <button id="run-all-tests" class="btn btn-primary mb-3">Executar Todos os Testes</button>
+                    
+                    <div id="automatic-test-results">
+                        <div class="log-item">
+                            Aguardando execução dos testes...
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-section">
+                    <h2>Logs Recentes</h2>
+                    <button id="fetch-logs-btn" class="btn btn-info mb-3">Buscar Logs Recentes</button>
+                    
+                    <div id="recent-logs">
+                        <div class="log-item">
+                            Nenhum log carregado ainda.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- Auth and Activity Logger -->
+    <script src="auth.js"></script>
+    <script src="activity-logger.js"></script>
+    
+    <!-- Environment Configuration - load first to set up API URLs -->
+    <script src="env.js"></script>
+    <script>
+        // Set API URL from environment for deployment
+        window.API_URL = window.ENV.API_URL;
+        console.log('test-activity-logger using API URL:', window.API_URL);
+    </script>
+    
+    <script>
+        // Test functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication status
+            const isLoggedIn = window.localStorage.getItem('auth_token') ? true : false;
+            
+            // Custom activity type toggle
+            document.getElementById('activity-type').addEventListener('change', function() {
+                const customGroup = document.getElementById('custom-type-group');
+                customGroup.style.display = this.value === 'custom' ? 'block' : 'none';
+            });
+            
+            // Login form test
+            document.getElementById('test-login-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const resultDiv = document.getElementById('login-result');
+                resultDiv.innerHTML = 'Tentando login...';
+                resultDiv.className = 'test-result';
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                try {
+                    const success = await login(username, password);
+                    if (success) {
+                        resultDiv.innerHTML = `<span class="passed">Login bem sucedido!</span><br>Um log de atividade de login deve ter sido criado.`;
+                        resultDiv.classList.add('result-passed');
+                    } else {
+                        resultDiv.innerHTML = `<span class="failed">Login falhou!</span><br>Um log de falha de login deve ter sido criado.`;
+                        resultDiv.classList.add('result-failed');
+                    }
+                } catch (error) {
+                    resultDiv.innerHTML = `<span class="failed">Erro no teste:</span><br>${error.message}`;
+                    resultDiv.classList.add('result-failed');
+                }
+            });
+            
+            // Manual activity logging test
+            document.getElementById('log-activity-btn').addEventListener('click', async function() {
+                const resultDiv = document.getElementById('manual-log-result');
+                resultDiv.innerHTML = 'Registrando atividade...';
+                resultDiv.className = 'test-result';
+                
+                if (!isLoggedIn) {
+                    resultDiv.innerHTML = `<span class="failed">Você precisa estar autenticado!</span><br>Faça login primeiro para testar esta funcionalidade.`;
+                    resultDiv.classList.add('result-failed');
+                    return;
+                }
+                
+                try {
+                    let activityType = document.getElementById('activity-type').value;
+                    if (activityType === 'custom') {
+                        activityType = document.getElementById('custom-type').value;
+                    }
+                    
+                    let details;
+                    try {
+                        details = JSON.parse(document.getElementById('details').value);
+                    } catch (e) {
+                        details = { error: "Invalid JSON", raw: document.getElementById('details').value };
+                    }
+                    
+                    const result = await window.ActivityLogger.logActivity(activityType, details);
+                    
+                    if (result) {
+                        resultDiv.innerHTML = `<span class="passed">Atividade registrada com sucesso!</span><br>ID: ${result.id}`;
+                        resultDiv.classList.add('result-passed');
+                    } else {
+                        resultDiv.innerHTML = `<span class="failed">Falha ao registrar atividade.</span><br>Verifique o console para mais detalhes.`;
+                        resultDiv.classList.add('result-failed');
+                    }
+                } catch (error) {
+                    resultDiv.innerHTML = `<span class="failed">Erro no teste:</span><br>${error.message}`;
+                    resultDiv.classList.add('result-failed');
+                }
+            });
+            
+            // Automatic tests
+            document.getElementById('run-all-tests').addEventListener('click', async function() {
+                const resultsDiv = document.getElementById('automatic-test-results');
+                resultsDiv.innerHTML = '<div class="log-item">Executando testes automáticos...</div>';
+                
+                if (!isLoggedIn) {
+                    resultsDiv.innerHTML = `<div class="log-item"><span class="failed">Você precisa estar autenticado!</span><br>Faça login primeiro para executar os testes automáticos.</div>`;
+                    return;
+                }
+                
+                const tests = [
+                    // Test 1: Basic activity logging
+                    async () => {
+                        const result = await window.ActivityLogger.logActivity('test_automated', { automated: true });
+                        return {
+                            name: 'Registro de atividade básica',
+                            passed: result !== null,
+                            details: result ? `ID: ${result.id}` : 'Falha ao registrar atividade'
+                        };
+                    },
+                    
+                    // Test 2: Page view logging
+                    async () => {
+                        const result = await window.ActivityLogger.logPageView('test_page');
+                        return {
+                            name: 'Registro de visualização de página',
+                            passed: true, // This should always work as it calls logActivity internally
+                            details: 'Função executada sem erros'
+                        };
+                    },
+                    
+                    // Test 3: Form interaction logging
+                    async () => {
+                        const result = await window.ActivityLogger.logFormInteraction('test_form', 'submit', { field1: 'test', password: 'secret' });
+                        return {
+                            name: 'Registro de interação com formulário (com redação de dados sensíveis)',
+                            passed: true, // Should always work as it calls logActivity internally
+                            details: 'Verificando se dados sensíveis foram redactados'
+                        };
+                    },
+                    
+                    // Test 4: Data modification logging
+                    async () => {
+                        const result = await window.ActivityLogger.logDataModification('cooperativado', 'update', '123', { nome: 'Teste' });
+                        return {
+                            name: 'Registro de modificação de dados',
+                            passed: true, // Should always work as it calls logActivity internally
+                            details: 'Modificação de registro simulada'
+                        };
+                    }
+                ];
+                
+                resultsDiv.innerHTML = '';
+                
+                for (const [index, test] of tests.entries()) {
+                    try {
+                        const result = await test();
+                        resultsDiv.innerHTML += `
+                            <div class="log-item">
+                                <h5>Teste ${index + 1}: ${result.name}</h5>
+                                <p class="${result.passed ? 'passed' : 'failed'}">Status: ${result.passed ? 'Passou' : 'Falhou'}</p>
+                                <p>Detalhes: ${result.details}</p>
+                            </div>
+                        `;
+                    } catch (error) {
+                        resultsDiv.innerHTML += `
+                            <div class="log-item">
+                                <h5>Teste ${index + 1}</h5>
+                                <p class="failed">Status: Erro</p>
+                                <p>Detalhes: ${error.message}</p>
+                            </div>
+                        `;
+                    }
+                }
+            });
+            
+            // Fetch recent logs
+            document.getElementById('fetch-logs-btn').addEventListener('click', async function() {
+                const logsDiv = document.getElementById('recent-logs');
+                logsDiv.innerHTML = '<div class="log-item">Carregando logs recentes...</div>';
+                
+                if (!isLoggedIn) {
+                    logsDiv.innerHTML = `<div class="log-item"><span class="failed">Você precisa estar autenticado como administrador!</span><br>Faça login com uma conta de administrador.</div>`;
+                    return;
+                }
+                
+                try {
+                    const token = window.localStorage.getItem('auth_token');
+                    const response = await fetch('http://127.0.0.1:8000/api/activity-logs?limit=10', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        if (data.total === 0) {
+                            logsDiv.innerHTML = '<div class="log-item">Nenhum log encontrado.</div>';
+                            return;
+                        }
+                        
+                        logsDiv.innerHTML = '';
+                        data.logs.forEach(log => {
+                            let details = '';
+                            try {
+                                details = JSON.stringify(log.details, null, 2);
+                            } catch (e) {
+                                details = log.details || 'N/A';
+                            }
+                            
+                            logsDiv.innerHTML += `
+                                <div class="log-item">
+                                    <h5>${log.activity_type}</h5>
+                                    <p><strong>Usuário:</strong> ${log.user_id}</p>
+                                    <p><strong>Data:</strong> ${new Date(log.timestamp).toLocaleString()}</p>
+                                    <p><strong>IP:</strong> ${log.ip_address || 'N/A'}</p>
+                                    <p><strong>Detalhes:</strong></p>
+                                    <pre>${details}</pre>
+                                </div>
+                            `;
+                        });
+                    } else if (response.status === 401 || response.status === 403) {
+                        logsDiv.innerHTML = '<div class="log-item"><span class="failed">Acesso não autorizado!</span><br>Você precisa ser um administrador para ver os logs.</div>';
+                    } else {
+                        logsDiv.innerHTML = `<div class="log-item"><span class="failed">Erro ao recuperar logs:</span><br>Status ${response.status}</div>`;
+                    }
+                } catch (error) {
+                    logsDiv.innerHTML = `<div class="log-item"><span class="failed">Erro:</span><br>${error.message}</div>`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

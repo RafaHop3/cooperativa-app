@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração de Segurança - Cooperativa</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .nav-tabs .nav-link.active {
+            background-color: #f8f9fa;
+            border-bottom-color: #f8f9fa;
+        }
+        
+        .tab-content {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            padding: 20px;
+        }
+        
+        .card {
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+        }
+        
+        .key-details {
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .status-badge {
+            font-size: 0.85rem;
+        }
+        
+        .status-active {
+            color: #28a745;
+        }
+        
+        .status-expired {
+            color: #dc3545;
+        }
+        
+        .status-rotating {
+            color: #ffc107;
+        }
+        
+        .log-record {
+            border-left: 4px solid transparent;
+            padding-left: 10px;
+            margin-bottom: 10px;
+            transition: background-color 0.2s;
+        }
+        
+        .log-record:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .log-record.verified {
+            border-left-color: #28a745;
+        }
+        
+        .log-record.unverified {
+            border-left-color: #dc3545;
+        }
+        
+        .log-record.locked {
+            border-left-color: #007bff;
+        }
+        
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.2em;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Cooperativa</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Início</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="admin-security.html">Administração de Segurança</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> <span id="username-display">Usuário</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item" href="#" id="logoutButton">
+                                <i class="fas fa-sign-out-alt"></i> Sair
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2><i class="fas fa-shield-alt"></i> Administração de Segurança</h2>
+        <p class="text-muted">Gerencie chaves criptográficas, verifique registros de atividades e controle períodos de bloqueio</p>
+        
+        <div class="alert alert-danger" id="errorAlert" style="display: none;"></div>
+        <div class="alert alert-success" id="successAlert" style="display: none;"></div>
+        
+        <ul class="nav nav-tabs" id="securityTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="keys-tab" data-toggle="tab" href="#keys" role="tab">
+                    <i class="fas fa-key"></i> Gerenciamento de Chaves
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logs-tab" data-toggle="tab" href="#logs" role="tab">
+                    <i class="fas fa-clipboard-list"></i> Verificação de Logs
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="locks-tab" data-toggle="tab" href="#locks" role="tab">
+                    <i class="fas fa-lock"></i> Períodos de Bloqueio
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="export-tab" data-toggle="tab" href="#export" role="tab">
+                    <i class="fas fa-file-export"></i> Exportação Segura
+                </a>
+            </li>
+        </ul>

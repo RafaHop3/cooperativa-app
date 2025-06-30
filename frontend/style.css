@@ -1,0 +1,164 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #4e1283;
+}
+header {
+  background-color: #111;
+  text-align: center;
+  padding: 15px;
+}
+header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: yellow;
+  text-shadow:
+    -2px -2px 3px #1b8a92,
+    2px 2px 3px #4e1283;
+}
+.container {
+  padding: 20px;
+}
+nav {
+  display: flex;
+  justify-content: center;
+  background-color: #007bff;
+  flex-wrap: wrap;
+}
+nav a {
+  padding: 14px 20px;
+  text-decoration: none;
+  color: #fff;
+  text-align: center;
+  flex: 1 1 120px;
+  border-right: 1px solid #fff;
+}
+nav a:last-child {
+  border-right: none;
+}
+nav a:hover {
+  background-color: #0056b3;
+}
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+label {
+  display: block;
+  font-weight: bold;
+}
+input[type="text"], input[type="number"], input[type="file"], select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #772188;
+}
+.form-section h2 {
+  margin-top: 0;
+}
+.tab-content h3 {
+  margin-top: 20px;
+}
+.subtask-button {
+  background-color: #17a2b8;
+  color: rgb(69, 0, 112);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  display: inline-block;
+}
+.subtask-button:hover {
+  background-color: #138496;
+}
+.form-section input[type="radio"] {
+  margin-right: 10px;
+}
+#partido-section {
+  display: none;
+}
+.collage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+  justify-content: center;
+}
+.collage img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.table-responsive {
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  border-collapse: collapse;
+  min-width: 600px;
+}
+th, td {
+  padding: 8px 6px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 1rem;
+}
+th {
+  background: #f5f5f5;
+}
+@media (max-width: 800px) {
+  nav a {
+    flex: 1 1 100%;
+    font-size: 1rem;
+    padding: 10px 4px;
+  }
+  .container {
+    padding: 8px;
+  }
+  table, th, td {
+    font-size: 0.95rem;
+    min-width: 100px;
+  }
+}
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.1rem;
+  }
+  .container {
+    padding: 2px;
+  }
+  .collage img {
+    width: 60px;
+    height: 60px;
+  }
+  .table-responsive {
+    margin: 0 -6px;
+  }
+  table {
+    min-width: 400px;
+  }
+}

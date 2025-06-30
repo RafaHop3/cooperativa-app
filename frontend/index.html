@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://code.jquery.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' https://maxcdn.bootstrapcdn.com 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' https://maxcdn.bootstrapcdn.com; connect-src 'self' http://127.0.0.1:8000;">
+  <title>Cooperativa Habitacional dos Empregados da Empresa Brasileira de Correios e Telégrafos</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Cooperativa Habitacional dos Empregados da Empresa Brasileira de Correios e Telégrafos</h1>
+  </header>
+  <nav>
+    <a href="#cadastro" onclick="showTab('cadastro')">Cadastro</a>
+    <a href="#faturamento" onclick="showTab('faturamento')">Faturamento</a>
+    <a href="#emitir" onclick="showTab('emitir')">Emitir</a>
+    <a href="#controler" onclick="showTab('controler')">Controler</a>
+    <a href="#relatorios" onclick="showTab('relatorios')">Relatórios</a>
+  </nav>
+  <div class="container">
+    <div id="cadastro" class="tab-content">
+      <h2>Cadastro de Cooperativado</h2>
+      <a class="subtask-button" href="#">Criar Cadastro</a>
+      <a class="subtask-button" href="#">Alterar Cadastro</a>
+    </div>
+    <div id="faturamento" class="tab-content">
+      <h2>Faturamento</h2>
+      <p>Informações de faturamento da cooperativa.</p>
+    </div>
+    <div class="collage" id="collage"></div>
+    <div style="margin-top:40px">
+      <h2>Cooperativados Cadastrados</h2>
+      <div class="table-responsive">
+        <table id="cooperativados-table">
+          <thead>
+            <tr>
+              <th>Matrícula</th>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Valor</th>
+              <th>Parcelas</th>
+              <th>Título</th>
+              <th>Partido</th>
+              <th>Foto</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Environment Configuration - load first to set up API URLs -->
+  <script src="env.js"></script>
+  <script>
+    // Set API URL from environment for deployment
+    window.API_URL = window.ENV.API_URL;
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>
