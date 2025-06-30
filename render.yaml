@@ -4,7 +4,6 @@ services:
     name: cooperativa-backend
     runtime: python
     region: oregon
-    plan: free
     buildCommand: cd backend && pip install -r requirements.txt
     startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT --workers 4
     envVars:
@@ -26,7 +25,6 @@ services:
   - type: web
     name: cooperativa-frontend
     runtime: static
-    plan: free
     buildCommand: echo "No build step needed for static site"
     staticPublishPath: ./frontend
     envVars:
@@ -55,6 +53,5 @@ services:
 
 databases:
   - name: cooperativa-db
-    plan: free
     databaseName: cooperativa
     user: cooperativa_user
